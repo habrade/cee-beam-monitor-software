@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<node id="ad9512_dev" fwinfo="endpoint">
+  <node id="BUSY" address="0x0" mask="0x1"/>
+  <node id="RST" address="0x1" mask="0x1"/>
+  <node id="FUNCTION" address="0x1" mask="0x2"/>
+</node>
