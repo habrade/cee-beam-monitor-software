@@ -1,4 +1,4 @@
-# MEA Software
+# Beam Monitor Software
 
 ##### File Structure
 - scripts: the python scripts to send IPbus command
@@ -7,5 +7,5 @@
 - run.py: we should run this script only.
 
 #### Notes
-- Don't forget to intsall IPbus Software (https://ipbus.web.cern.ch/doc/user/html/software/installation.html).
+- Don't forget to install IPbus Software (https://ipbus.web.cern.ch/doc/user/html/software/installation.html).
 

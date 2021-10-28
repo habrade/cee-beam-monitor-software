@@ -1,11 +1,10 @@
 import coloredlogs
 import logging
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-coloredlogs.install(level='DEBUG')
-coloredlogs.install(level='DEBUG', logger=log)
+log.setLevel(logging.INFO)
 
 __author__ = "Sheng Dong"
 __email__ = "s.dong@mails.ccnu.edu.cn"

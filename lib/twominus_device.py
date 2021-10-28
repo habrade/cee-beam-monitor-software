@@ -1,4 +1,5 @@
 import math
+import os
 import sys
 import datetime
 
@@ -9,17 +10,17 @@ from lib.twominus_defines import *
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 log = logging.getLogger(__name__)
-log.setLevel(logging.INFO)
-coloredlogs.install(level="INFO", logger=log)
+log.setLevel(logging.DEBUG)
+coloredlogs.install(level="DEBUG", logger=log)
 
 __author__ = "Sheng Dong"
 __email__ = "s.dong@mails.ccnu.edu.cn"
 
 
 class TwominusDevice:
-    def __init__(self, hw):
-        self.hw = hw
-        self.twominus_base = "twominus_dev."
+    def __init__(self, ipbus_link):
+        self._ipbus_link = ipbus_link
+        self.reg_name_base = "twominus_dev."
         log.debug("TwoMinus device initailed.")
 
 
@@ -45,15 +46,19 @@ class TwominusDevice:
         return self._ipbus_link.r_reg(self.reg_name_base, reg_name)
 
     def start_scan(self):
-        reg_name = "twominus_start_scan" 
+        reg_name = "start_scan"
         return self.w_reg(reg_name, 0, is_pulse=True, go_dispatch=True)
 
     def reset_scan(self):
-        reg_name = "twominus_reset_scan" 
+        reg_name = "reset_scan"
         return self.w_reg(reg_name, 0, is_pulse=True, go_dispatch=True)
 
+    def resync(self):
+        reg_name = "ad9252_resync"
+        return self.w_reg(reg_name, 0, is_pulse=True, go_dispatch=True)
+    
     def reset_ad9252(self):
-        reg_name = "d9252_soft_rst" 
+        reg_name = "ad9252_soft_rst"
         return self.w_reg(reg_name, 0, is_pulse=True, go_dispatch=True)
 
     def path_reset_ad9252(self):
@@ -91,10 +96,13 @@ class TwominusDevice:
     def set_time(self):
         """ Set time"""
         now = datetime.datetime.now()
+        log.debug("Now: {}".format(now))
         time_high = (now.year<<4) + now.month
         time_mid = (now.day<<8) + now.hour
         time_low = (now.minute<<8) + now.second
         time_us = now.microsecond
+
+        log.debug("Time high: {} Time mid: {} Time low: {} time_us: {}".format(time_high, time_mid, time_low, time_us))
 
         self.set_time_high(time_high)
         self.set_time_mid(time_mid)
@@ -141,12 +149,12 @@ class TwominusDevice:
         
     def read_data(self, safe_mode=True):
         mem = []
-        while True:
-            mem0 = self.read_ipb_data_fifo(slice_size, safe_mode=safe_mode)
-            if len(mem0) > 0:
-                mem.append(mem0)
-            if not self.is_busy_rs():
-                break
+        # while True:
+        #     mem0 = self.read_ipb_data_fifo(slice_size, safe_mode=safe_mode)
+        #     if len(mem0) > 0:
+        #         mem.append(mem0)
+        #     if not self.is_busy_rs():
+        #         break
         # try read more data
         for i in range(100):
             mem0 = self.read_ipb_data_fifo(slice_size, safe_mode=safe_mode)
