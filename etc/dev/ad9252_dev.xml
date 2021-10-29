@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<node id="ad9252_dev" fwinfo="endpoint">
+
+  <node id="BUSY" address="0x0" mask="0x1"/>
+  <node id="STATE" address="0x0" mask="0x3e"/>
+
+  <node id="RST" address="0x1" mask="0x1"/>
+  <node id="START" address="0x1" mask="0x2"/>
+  <node id="RESTART" address="0x1" mask="0x4"/>
+  <node id="PULSE" address="0x1" mask="0x8"/>
+  <node id="TEST_MODE" address="0x1" mask="0x10"/>
+
+</node>

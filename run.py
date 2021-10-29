@@ -6,6 +6,7 @@ import coloredlogs
 import logging
 
 from lib.ad9512_device import Ad9512Device
+from lib.ad9252_device import Ad9252Device
 from lib.freq_ctr_device import FreqCtr
 from lib.global_device import GlobalDevice
 from lib.ipbus_link import IPbusLink
@@ -28,7 +29,7 @@ def fre_counter(freq_ctr_dev):
         freq = freq_ctr_dev.get_chn_freq(i)
         log.info("Tested {:s} frequency is : {}".format(clock_name[i], freq))
 
-def main(ad9512_initial, dataout_file):
+def main(ad9512_initial, ad9252_initial, dataout_file):
     ## Get ipbus connection
     ipbus_link = IPbusLink()
     
@@ -41,12 +42,19 @@ def main(ad9512_initial, dataout_file):
         ad9512_dev = Ad9512Device(ipbus_link)
         # Set AD9512
         ad9512_dev.set_ad9512()
-    
-    ## Set TwoMinus
+
+
+    if ad9252_initial == True:
+        ad9252_dev = Ad9252Device(ipbus_link)
+        ad9252_dev.reset()
+        ad9252_dev.restart()
+
+
+    ## Set datapath
     twominus_dev = TwominusDevice(ipbus_link)
-    twominus_dev.reset_ad9252()
-    twominus_dev.path_reset_ad9252()
-    # twominus_dev.pack_start_ad9252()
+    twominus_dev.reset_datapath()
+    twominus_dev.path_reset_datapath()
+    twominus_dev.pack_start_datapath()
 
     twominus_dev.set_chip_cnt(0x70)
     twominus_dev.set_data_type(0)
@@ -70,10 +78,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     mode_group = parser.add_mutually_exclusive_group()
     mode_group.add_argument('-a', '--all',
-                            help="Global reset, initial spi, dac70004 and start rolling shutter",
+                            help="Global reset, initial ad95212 and ad9252",
                             action="store_true")
     parser.add_argument('-ad9512', '--ad9512_initial',
                         help="Setting AD9512",
+                        action="store_true")
+    parser.add_argument('-ad9252', '--ad9252_initial',
+                        help="Setting AD9252",
                         action="store_true")
     parser.add_argument('-o', '--output_file',
                         default="data/dataout.txt",
@@ -81,6 +92,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.all:
-        main(ad9512_initial=True, dataout_file=args.output_file)
+        main(ad9512_initial=True, ad9252_initial=True ,dataout_file=args.output_file)
     else:
-        main(ad9512_initial=args.ad9512_initial, dataout_file=args.output_file)
+        main(ad9512_initial=args.ad9512_initial, ad9252_initial=args.ad9252_initial, dataout_file=args.output_file)

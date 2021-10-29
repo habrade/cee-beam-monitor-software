@@ -54,19 +54,19 @@ class TwominusDevice:
         return self.w_reg(reg_name, 0, is_pulse=True, go_dispatch=True)
 
     def resync(self):
-        reg_name = "ad9252_resync"
+        reg_name = "datapath_resync"
         return self.w_reg(reg_name, 0, is_pulse=True, go_dispatch=True)
     
-    def reset_ad9252(self):
-        reg_name = "ad9252_soft_rst"
+    def reset_datapath(self):
+        reg_name = "datapath_soft_rst"
         return self.w_reg(reg_name, 0, is_pulse=True, go_dispatch=True)
 
-    def path_reset_ad9252(self):
-        reg_name = "ad9252_soft_path_rst" 
+    def path_reset_datapath(self):
+        reg_name = "datapath_soft_path_rst"
         return self.w_reg(reg_name, 0, is_pulse=True, go_dispatch=True)
 
-    def pack_start_ad9252(self):
-        reg_name = "ad9252_soft_pack_start" 
+    def pack_start_datapath(self):
+        reg_name = "datapath_soft_pack_start"
         return self.w_reg(reg_name, 0, is_pulse=True, go_dispatch=True)
     
     def set_data_type(self, val):
