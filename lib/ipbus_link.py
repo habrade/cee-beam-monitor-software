@@ -34,8 +34,8 @@ class IPbusLink:
 
         :return: IPbus Device
         """
-        uhal.setLogLevelTo(uhal.LogLevel.DEBUG)
-        # uhal.disableLogging()
+        # uhal.setLogLevelTo(uhal.LogLevel.DEBUG)
+        uhal.disableLogging()
         hw = uhal.getDevice("TwoMinus.udp.0", self.device_uri, self.address_table_uri)
         return hw
 
