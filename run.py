@@ -52,7 +52,8 @@ def main(ad9512_initial, ad9252_initial, dataout_file):
 
     ## Set datapath
     twominus_dev = TwominusDevice(ipbus_link)
-    twominus_dev.reset_datapath()
+    # twominus_dev.reset_datapath()
+    # twominus_dev.reset_rfifo()
     twominus_dev.path_reset_datapath()
     twominus_dev.pack_start_datapath()
 
@@ -66,8 +67,9 @@ def main(ad9512_initial, ad9252_initial, dataout_file):
     twominus_dev.resync()
 
     # read data
-    mem = twominus_dev.read_ipb_data_fifo(10, safe_mode=True)
-    print(mem)
+    twominus_dev.read_fifo_len()
+    mem = twominus_dev.read_data(safe_mode=True)
+    twominus_dev.write2txt(dataout_file, mem)
 
     ## Test clock frq
     # freq_ctr_dev = FreqCtr(ipbus_link)

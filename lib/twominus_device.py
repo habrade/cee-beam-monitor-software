@@ -145,7 +145,12 @@ class TwominusDevice:
         :return:
         """
         log.info("Reset readout FIFO.")
-        self.w_reg("rst_rfifo", 0, is_pulse=True, go_dispatch=True)
+        self.w_reg("DATA_FIFO.rst_rfifo", 0, is_pulse=True, go_dispatch=True)
+
+    def read_fifo_len(self):
+        len = self.r_reg("DATA_FIFO.RFIFO_LEN")
+        log.debug("Valid number in DATA FIFO: {}".format(len))
+        return len
         
     def read_data(self, safe_mode=True):
         mem = []
