@@ -161,7 +161,7 @@ class TwominusDevice:
         #     if not self.is_busy_rs():
         #         break
         # try read more data
-        for i in range(100):
+        for i in range(1000):
             mem0 = self.read_ipb_data_fifo(slice_size, safe_mode=safe_mode)
             if len(mem0) > 0:
                 mem.append(mem0)

@@ -2,13 +2,16 @@
 
 import coloredlogs
 import logging
+import matplotlib
 
-from lib.twominus_defines import *
+# from lib.twominus_defines import *
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 coloredlogs.install(level="DEBUG", logger=log)
+
+logging.getLogger("matplotlib").setLevel(logging.INFO)
 
 __author__ = "Sheng Dong"
 __email__ = "s.dong@mails.ccnu.edu.cn"
@@ -54,29 +57,24 @@ def main():
     for i in range(num_frame):
         log.debug("head_location: {}, tail_location: {}".format(head_location[i], tail_location[i]))
         new_frame = data_nparr[(head_location[i]+8):tail_location[i]]
+        print(hex(data_nparr[tail_location[i]-2]))
         log.debug("New frame index: {}, length: {}, number of data: {}".format(i, new_frame.size, new_frame.size/4))
         frame_slices.append(new_frame)
 
-    num_chip = 4
-    data_arr_ch = []
-
-    # data_ch0_test = frame_slices[0].where()
-
-    # b = np.reshape(frame_slices[8], (2593,4))
-
-    frame_show = frame_slices[0]
-    # print(frame_show.size)
+    frame_show = frame_slices[37]
 
     ch_a = frame_show[0:frame_show.size:4]
     ch_b = frame_show[1:frame_show.size:4]
     ch_c = frame_show[2:frame_show.size:4]
     ch_d = frame_show[3:frame_show.size:4]
 
-    
-    plt.plot(ch_a)    
-    plt.plot(ch_b)    
-    plt.plot(ch_c)    
-    plt.plot(ch_d)    
+    fig, ((ax1, ax2), (ax3,ax4)) = plt.subplots(2,2)
+
+    ax1.plot(ch_a, marker='o')
+    ax2.plot(ch_b, marker='+')
+    ax3.plot(ch_c, marker='s')
+    ax4.plot(ch_d, marker=' ')
+  
     plt.show()
 
 
