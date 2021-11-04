@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import argparse
+
 
 import coloredlogs
 import logging
@@ -27,7 +29,7 @@ file_path = data_dir + file_name
 frame_head = 0xeb9055aa
 frame_tail = 0xeb905aa5
 
-def main():
+def main(plot_frame):
 
     data_list = []
 
@@ -61,22 +63,54 @@ def main():
         log.debug("New frame index: {}, length: {}, number of data: {}".format(i, new_frame.size, new_frame.size/4))
         frame_slices.append(new_frame)
 
-    frame_show = frame_slices[37]
+    frame_show = frame_slices[int(plot_frame, 10)]
 
     ch_a = frame_show[0:frame_show.size:4]
     ch_b = frame_show[1:frame_show.size:4]
     ch_c = frame_show[2:frame_show.size:4]
     ch_d = frame_show[3:frame_show.size:4]
 
-    fig, ((ax1, ax2), (ax3,ax4)) = plt.subplots(2,2)
+    np.savetxt(data_dir+"ch_a.txt", ch_a, delimiter='\n', fmt='%08x') 
+    np.savetxt(data_dir+"ch_b.txt", ch_b, delimiter='\n', fmt='%08x') 
+    np.savetxt(data_dir+"ch_c.txt", ch_c, delimiter='\n', fmt='%08x') 
+    np.savetxt(data_dir+"ch_d.txt", ch_d, delimiter='\n', fmt='%08x') 
 
-    ax1.plot(ch_a, marker='o')
-    ax2.plot(ch_b, marker='+')
-    ax3.plot(ch_c, marker='s')
-    ax4.plot(ch_d, marker=' ')
-  
+    # calculate volt
+
+    fig, ((ax1, ax2), (ax3,ax4)) = plt.subplots(2,2)
+    adc_index = 1
+    fig.suptitle("The adc9252 ({:}) value of each channel. Frame index: {:}.".format(adc_index ,int(plot_frame)))
+
+    ax1.plot(ch_a, marker='o', color="grey")
+    ax2.plot(ch_b, marker='+', color="salmon")
+    ax3.plot(ch_c, marker='s', color="wheat")
+    ax4.plot(ch_d, marker=' ', color="yellowgreen")
+
+    ax1.set_title("Channel: 1")
+    ax2.set_title("Channel: 2")
+    ax3.set_title("Channel: 3")
+    ax4.set_title("Channel: 4")
+
+    ax1.set_xlabel("Data index")
+    ax1.set_ylabel("Data value")
+    ax2.set_xlabel("Data index")
+    ax2.set_ylabel("Data value")
+    ax3.set_xlabel("Data index")
+    ax3.set_ylabel("Data value")
+    ax4.set_xlabel("Data index")
+    ax4.set_ylabel("Data value")
     plt.show()
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    mode_group = parser.add_mutually_exclusive_group()
+    # mode_group.add_argument('-a', '--all',
+                            # help="nothing here",
+                            # action="store_true")
+    parser.add_argument('-p', '--plot_frame',
+                        default=0,
+                        help="The frame to be plot.")
+    args = parser.parse_args()
+
+    main(plot_frame=args.plot_frame)

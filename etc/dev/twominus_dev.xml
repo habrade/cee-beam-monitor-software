@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='ISO-8859-1'?>
 <node fwinfo="endpoint">
     <node address="0x0" mask="0x1FF" id="data_path_status" permission="r"/>
+    <node address="0x1" mask="0xFFFFFFFF" id="data_lost_counter" permission="r"/>
 
     <node address="0x8" mask="0x01" id="start_scan" permission="rw"/>
     <node address="0x8" mask="0x02" id="reset_scan" permission="rw"/>

@@ -49,11 +49,8 @@ class Ad9252Device:
         :return:
         """
         reg_name = "BUSY"
-        busy = self.r_reg(reg_name)
-        if busy == 1:
-            return True
-        else:
-            return False
+        return self.r_reg(reg_name)
+
 
     def reset(self, go_dispatch=True):
         """

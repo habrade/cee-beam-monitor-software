@@ -52,30 +52,31 @@ def main(ad9512_initial, ad9252_initial, dataout_file):
 
     ## Set datapath
     twominus_dev = TwominusDevice(ipbus_link)
-    twominus_dev.reset_datapath()
-    # twominus_dev.reset_rfifo()
-    twominus_dev.path_reset_datapath()
-    twominus_dev.pack_start_datapath()
+    if True:
+        twominus_dev.reset_datapath()
+        # twominus_dev.reset_rfifo()
+        twominus_dev.path_reset_datapath()
+        twominus_dev.pack_start_datapath()
+        twominus_dev.resync()
 
-    twominus_dev.set_chip_cnt(0x70)
-    twominus_dev.set_data_type(4)
-    twominus_dev.set_time()
+        twominus_dev.set_chip_cnt(0x70)
+        twominus_dev.set_data_type(4)
+        twominus_dev.set_time()
 
-    twominus_dev.reset_scan()
-    time.sleep(0.1)
-    twominus_dev.start_scan()
+        twominus_dev.reset_scan()
+        time.sleep(0.1)
+        twominus_dev.start_scan()
 
-    twominus_dev.resync()
+        time.sleep(2)
 
     # read data
-    time.sleep(2)
-    twominus_dev.read_fifo_len()
-    mem = twominus_dev.read_data(safe_mode=True)
-    twominus_dev.write2txt(dataout_file, mem)
+    # twominus_dev.read_fifo_len()
+    # mem = twominus_dev.read_data(read_times=1000, safe_mode=True)
+    # twominus_dev.write2txt(dataout_file, mem)
 
-    ## Test clock frq
-    freq_ctr_dev = FreqCtr(ipbus_link)
-    fre_counter(freq_ctr_dev)
+    # ## Test clock frq
+    # freq_ctr_dev = FreqCtr(ipbus_link)
+    # fre_counter(freq_ctr_dev)
 
 
 if __name__ == '__main__':
