@@ -50,18 +50,18 @@ class Ad9512Device:
         """
         return self._ipbus_link.r_reg(self.reg_name_base, reg_name)
 
-    def is_busy_spi(self):
-        """
-        Check whether spi us busy.
-
-        :return:
-        """
-        reg_name = "BUSY"
-        spi_busy = self.r_reg(reg_name)
-        if spi_busy == 1:
-            return True
-        else:
-            return False
+    # def is_busy_spi(self):
+    #     """
+    #     Check whether spi us busy.
+    #
+    #     :return:
+    #     """
+    #     reg_name = "BUSY"
+    #     spi_busy = self.r_reg(reg_name)
+    #     if spi_busy == 1:
+    #         return True
+    #     else:
+    #         return False
 
     def reset_spi(self, go_dispatch=True):
         """
@@ -110,22 +110,9 @@ class Ad9512Device:
 
         :return:
         """
-        if self.is_busy_spi():
-            log.error("SPI is busy now! Stop!")
-        else:
-            # spi_data = self.set_spi_data()
-            self.spi_dev.w_data_regs(spi_data=self.spi_data)
-            self.spi_dev.w_ctrl()
-            self.spi_dev.start()
-
-    
-    def set_function(self, func):
-        if self.is_busy():
-            return False
-        else:
-            self.w_data(func)
-            self.we()
-            return True
+        self.spi_dev.w_data_regs(spi_data=self.spi_data)
+        self.spi_dev.w_ctrl()
+        self.spi_dev.start()
 
     def ad9512_function_go(self):
         reg_name = "FUNCTION"

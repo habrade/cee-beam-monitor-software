@@ -7,4 +7,3 @@
     <node id="freq_ctr_dev"   module="file://./dev/ipbus_freq_ctr.xml"  address="0x80000000" tags="slave" />
     <node id="ad9252_dev"   module="file://./dev/ad9252_dev.xml"  address="0xa0000000" tags="slave" />
 </node>
-
