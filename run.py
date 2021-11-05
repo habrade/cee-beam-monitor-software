@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import sys
 
 import time
 import coloredlogs
@@ -40,15 +41,12 @@ def main(ad9512_initial, ad9252_initial, dataout_file):
 
     if ad9512_initial == True:
         ad9512_dev = Ad9512Device(ipbus_link)
-        # Set AD9512
         ad9512_dev.set_ad9512()
-
 
     if ad9252_initial == True:
         ad9252_dev = Ad9252Device(ipbus_link)
-        ad9252_dev.reset()
-        ad9252_dev.restart()
-
+        # ad9252_dev.go_test_mode()
+        ad9252_dev.go_working()
 
     ## Set datapath
     twominus_dev = TwominusDevice(ipbus_link)
@@ -67,12 +65,10 @@ def main(ad9512_initial, ad9252_initial, dataout_file):
         time.sleep(0.1)
         twominus_dev.start_scan()
 
-        time.sleep(2)
-
     # read data
-    # twominus_dev.read_fifo_len()
-    # mem = twominus_dev.read_data(read_times=1000, safe_mode=True)
-    # twominus_dev.write2txt(dataout_file, mem)
+    twominus_dev.read_fifo_len()
+    mem = twominus_dev.read_data(read_times=1000, safe_mode=True)
+    twominus_dev.write2txt(dataout_file, mem)
 
     # ## Test clock frq
     # freq_ctr_dev = FreqCtr(ipbus_link)

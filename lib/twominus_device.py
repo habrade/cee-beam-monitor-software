@@ -52,6 +52,7 @@ class TwominusDevice:
         return self.w_reg(reg_name, 0, is_pulse=True, go_dispatch=True)
 
     def resync(self):
+        """ Sync date and time """
         reg_name = "datapath_resync"
         return self.w_reg(reg_name, 0, is_pulse=True, go_dispatch=True)
     
