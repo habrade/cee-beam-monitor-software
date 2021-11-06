@@ -11,9 +11,9 @@ __email__ = "s.dong@mails.ccnu.edu.cn"
 
 
 class SpiDevice:
-    def __init__(self, ipbus_link):
+    def __init__(self, ipbus_link, ch=0):
         self._ipbus_link = ipbus_link
-        self.reg_name_base = "spi_dev."
+        self.reg_name_base = "spi_dev" + str(ch) + "."
 
         self.data_len = 0
         self.go_busy = 0

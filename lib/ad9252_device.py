@@ -1,16 +1,16 @@
 import logging
 import time
-from os import altsep
 
 from lib.spi_device import SpiDevice
 
-logging.basicConfig(level=logging.INFO,
+logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 log = logging.getLogger(__name__)
-log.setLevel(logging.INFO)
+log.setLevel(logging.DEBUG)
 
 __author__ = "Sheng Dong"
 __email__ = "s.dong@mails.ccnu.edu.cn"
+
 
 class Ad9252Device:
     def __init__(self, ipbus_link):
@@ -18,7 +18,8 @@ class Ad9252Device:
         self.reg_name_base = "ad9252_dev."
 
         self.spi_data = []
-        self.spi_dev = SpiDevice(self._ipbus_link)
+        self.spi_chanel = 1
+        self.spi_dev = SpiDevice(self._ipbus_link, self.spi_chanel)
 
         self.set_spi()
 
@@ -55,7 +56,6 @@ class Ad9252Device:
     #     """
     #     reg_name = "RST"
     #     self.w_reg(reg_name, 0, is_pulse=True, go_dispatch=go_dispatch)
-        
 
     def set_spi(self, data_len=24, ie=False, ass=True, lsb=False, rx_neg=False, tx_neg=True, div=4, ss=0x00):
         """
@@ -131,61 +131,77 @@ class Ad9252Device:
     def device_index_1(self, val=0x0f):
         """Bits are set to determine which on-chip device receives the next write command."""
         self.spi_write(0x05, val)
-        
-    def device_update(self, val=0x00):
+
+    def device_update(self, val=0x01):
         """Synchronously transfers data from the master shift register to the slave."""
-        self.spi_write(0xff, val)
-        
+        self.spi_write(0xff, 0x00)
+        self.spi_write(0xff, 0x01)
+        self.spi_write(0xff, 0x00)
+
     def set_function_modes(self, val=0x00):
         """Determines various generic modes of chip operation."""
+        log.debug("Set mode to: {:#x}".format(val))
         self.spi_write(0x08, val)
+        self.device_update()
 
     def set_function_clock(self, val=0x01):
         """Turns the internal duty cycle stabilizer on and off."""
         self.spi_write(0x09, val)
+        self.device_update()
 
     def set_function_test_io(self, val=0x00):
         """When this register is set, the test data is placed on the output pins in place of normal data."""
+        log.debug("set test_io to: {:}".format(val))
         self.spi_write(0x0D, val)
+        self.device_update()
 
     def set_function_output_mode(self, val=0x00):
         """Configures the outputs and the format of the data."""
         self.spi_write(0x14, val)
+        self.device_update()
 
     def set_function_output_adjust(self, val=0x00):
         """Determines LVDS or other output properties. Primarily functions to set the LVDS span
          and common-mode levels in place of an external resistor."""
         self.spi_write(0x15, val)
+        self.device_update()
 
     def set_function_output_phase(self, val=0x03):
         """On devices that utilize global clock divide, this register determines which phase of
         the divider output is used to supply the output clock. Internal latching is unaffected."""
         self.spi_write(0x16, val)
+        self.device_update()
 
     def set_function_user_patt1_lsb(self, val=0x00):
         """User-defined pattern, 1 LSB"""
         self.spi_write(0x19, val)
+        self.device_update()
 
     def set_function_user_patt1_msb(self, val=0x00):
         """User-defined pattern, 1 MSB"""
         self.spi_write(0x1A, val)
+        self.device_update()
 
     def set_function_user_patt2_lsb(self, val=0x00):
         """User-defined pattern, 2 LSB"""
         self.spi_write(0x1B, val)
+        self.device_update()
 
     def set_function_user_patt2_msb(self, val=0x00):
         """User-defined pattern, 2 MSB"""
         self.spi_write(0x1C, val)
+        self.device_update()
 
     def set_function_serial_control(self, val=0x00):
         """Serial stream control. Default causes MSB first and the native bit stream (global)."""
         self.spi_write(0x21, val)
+        self.device_update()
 
     def set_function_serial_ch_stat(self, val=0x00):
         """Used to power down individual sections of a converter (local)."""
         self.spi_write(0x22, val)
-        
+        self.device_update()
+
     def get_reg_onchip(self, addr):
         rw = 1
         w0 = 0
@@ -198,9 +214,13 @@ class Ad9252Device:
         return reg_val
 
     def go_test_mode(self):
-        self.set_function_modes(0x0C)
-        self.device_update(0x01)
+        log.debug("Setting ad9252 to test mode")
+        self.set_function_test_io(0x0C)
 
     def go_working(self):
-        self.set_function_modes(0x00)
-        self.device_update(0x01)
+        log.debug("Setting ad9252 to working mode")
+        self.set_function_test_io(0x00)
+
+    def soft_reset_chip(self):
+        log.debug("Soft reset AD9252")
+        self.chip_port_config(0x3c)

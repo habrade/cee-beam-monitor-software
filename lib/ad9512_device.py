@@ -20,8 +20,9 @@ class Ad9512Device:
 
         self.ad9512_function_go()
 
+        self.spi_channel = 0
         self.spi_data = []
-        self.spi_dev = SpiDevice(self._ipbus_link)
+        self.spi_dev = SpiDevice(self._ipbus_link, self.spi_channel)
 
         # self.reset_spi()
         self.set_spi()

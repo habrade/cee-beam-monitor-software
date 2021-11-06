@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <node>
-    <node id="global_dev"     module="file://./dev/global_dev.xml"      address="0x00000000" tags="slave" />
-    <node id="ad9512_dev"     module="file://./dev/ad9512_dev.xml"      address="0x20000000" tags="slave" />
-    <node id="spi_dev"        module="file://./dev/opencores_spi.xml"         address="0x40000000" tags="slave" />
-    <node id="twominus_dev"   module="file://./dev/twominus_dev.xml"  address="0x60000000" tags="slave" />
-    <node id="freq_ctr_dev"   module="file://./dev/ipbus_freq_ctr.xml"  address="0x80000000" tags="slave" />
-    <node id="ad9252_dev"   module="file://./dev/ad9252_dev.xml"  address="0xa0000000" tags="slave" />
+    <node id="global_dev" module="file://./dev/global_dev.xml" address="0x00000000" tags="slave"/>
+    <node id="ad9512_dev" module="file://./dev/ad9512_dev.xml" address="0x20000000" tags="slave"/>
+    <node id="spi_dev0" module="file://./dev/opencores_spi.xml" address="0x40000000" tags="slave"/>
+    <node id="twominus_dev" module="file://./dev/twominus_dev.xml" address="0x60000000" tags="slave"/>
+    <node id="freq_ctr_dev" module="file://./dev/ipbus_freq_ctr.xml" address="0x80000000" tags="slave"/>
+    <node id="spi_dev1" module="file://./dev/opencores_spi.xml" address="0xa0000000" tags="slave"/>
 </node>

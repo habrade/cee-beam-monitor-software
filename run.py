@@ -42,11 +42,17 @@ def main(ad9512_initial, ad9252_initial, dataout_file):
     if ad9512_initial == True:
         ad9512_dev = Ad9512Device(ipbus_link)
         ad9512_dev.set_ad9512()
+        time.sleep(.5)
 
     if ad9252_initial == True:
         ad9252_dev = Ad9252Device(ipbus_link)
+        ad9252_dev.soft_reset_chip()
+        time.sleep(.1)
+        ad9252_dev.chip_port_config()
         # ad9252_dev.go_test_mode()
+        time.sleep(.1)
         ad9252_dev.go_working()
+        # time.sleep(1)
 
     ## Set datapath
     twominus_dev = TwominusDevice(ipbus_link)
@@ -62,12 +68,12 @@ def main(ad9512_initial, ad9252_initial, dataout_file):
         twominus_dev.set_time()
 
         twominus_dev.reset_scan()
-        time.sleep(0.1)
+        time.sleep(1)
         twominus_dev.start_scan()
 
     # read data
     twominus_dev.read_fifo_len()
-    mem = twominus_dev.read_data(read_times=1000, safe_mode=True)
+    mem = twominus_dev.read_data(read_times=100, safe_mode=True)
     twominus_dev.write2txt(dataout_file, mem)
 
     # ## Test clock frq
