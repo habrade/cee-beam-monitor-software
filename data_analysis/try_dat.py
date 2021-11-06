@@ -22,16 +22,12 @@ __email__ = "s.dong@mails.ccnu.edu.cn"
 import numpy as np
 from matplotlib import pyplot as plt
 
-data_dir = "data/"
-file_name = "AdcData-11-5-20-48-30.dat"
-file_path = data_dir + file_name
-
 frame_head = 0xeb9055aa
 frame_tail = 0xeb905aa5
 
-def main(plot_frame):
+def main(inputfile, plot_frame):
 
-    with open(file_path, 'rb') as f:
+    with open(inputfile, 'rb') as f:
         hexdata = f.read().hex()
 
     hexlist = list(map(''.join, zip(*[iter(hexdata)] * 8)))
@@ -116,6 +112,9 @@ if __name__ == '__main__':
                         type=int,
                         default=0,
                         help="The frame to be plot.")
+    parser.add_argument('-i', '--input_file',
+                        default="data/test.dat",
+                        help="The .dat file")
     args = parser.parse_args()
 
-    main(plot_frame=args.plot_frame)
+    main(inputfile=args.input_file, plot_frame=args.plot_frame)
