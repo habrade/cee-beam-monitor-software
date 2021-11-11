@@ -343,9 +343,10 @@ def test():
     #print(hex(b0))
 
 def test1():
-    dirname = "../2021.11.8test_data/a4/"
+    #dirname = "../2021.11.8test_data/a4/"
+    dirname = "../2021.11.11test_data/a2/"
 
-    filenamebkg = "background1.dat"
+    filenamebkg = "background2.dat"
     pathbkg = dirname+filenamebkg
     runbkg = myrun(pathbkg, tag="bkg")
     runbkg.getinput_from_dat()
@@ -361,7 +362,7 @@ def test1():
 #    runsig.process_bksub(runbkg)
 #    runsig.finalize()
 
-    paths = glob(dirname+'*.dat')
+    paths = glob(dirname+'*/*.dat')
     print(f"{len(paths)} files")
     for f in paths:
         print(f'\n{f}')
