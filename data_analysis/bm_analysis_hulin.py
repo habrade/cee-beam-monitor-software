@@ -8,20 +8,37 @@ from array import array
 import numpy as np
 
 class myrun(object):
-    def __init__(self, filename='../data/arst1.05_20k_200mV_in.dat'):
+    def __init__(self, filename='../data/arst1.05_20k_200mV_in.dat', tag=''):
         self.filename = filename
         self.dirname = os.path.dirname(filename)
         self.basename = os.path.basename(filename)
-        self.outfilenameraw = self.dirname + "/" + self.basename.split('.')[0]+"_raw.root"
-        self.outfilenamesel = self.dirname + "/" + self.basename.split('.')[0]+"_sel.root"
+        self.outfilenameraw = self.dirname + "/" + tag + self.basename.split('.')[0]+"_raw.root"
+        self.outfilenamesel = self.dirname + "/" + tag + self.basename.split('.')[0]+"_sel.root"
+        self.outfilenamesub = self.dirname + "/" + tag + self.basename.split('.')[0]+"_sub.root"
         #self.hexdataall = 0
         #self.lhexframe = [None]*4000 #notice!!
         self.lhexframe = []
-        self.outfileraw = TFile(self.outfilenameraw,'recreate')
-        self.outfilesel = TFile(self.outfilenamesel,'recreate')
+        self.outfileraw = None
+        self.outfilesel = None
+        self.outfilesub = None
         #self.labelcut = [7600,7600,100,7600]
         self.labelcut = [5000,5000,100,5000]
-        self.meanstd = 0
+        self.arrdataframealign0 = None
+        self.arrdataframealign1 = None
+        self.arrdataframealign2 = None
+        self.arrdataframealign3 = None
+        self.mean0 = None
+        self.mean1 = None
+        self.mean2 = None
+        self.mean3 = None
+        self.std0 = None
+        self.std1 = None
+        self.std2 = None
+        self.std3 = None
+        self.arrdataframealignsub0 = None
+        self.arrdataframealignsub1 = None
+        self.arrdataframealignsub2 = None
+        self.arrdataframealignsub3 = None
 
     def getinput_from_dat(self):
         with open(self.filename,'rb') as f1:
@@ -56,7 +73,7 @@ class myrun(object):
                     if ltail[it] > lhead[ih] and ltail[it] < lhead[ih+1]:
                         iframestop = ltail[it]-5
                         break
-                print("frame start {}, stop {}, length {}".format(iframestart, iframestop, iframestop - iframestart + 1))
+                #print("frame start {}, stop {}, length {}".format(iframestart, iframestop, iframestop - iframestart + 1))
                 if (iframestop - iframestart + 1) == 10368 :
                     self.lhexframe.append((lhex[iframestart:iframestop+1],ih))
                     #self.lhexframe[ilhex] = (lhex[iframestart:iframestop+1],ih)
@@ -66,6 +83,7 @@ class myrun(object):
 
 
     def process_input(self):
+        self.outfileraw = TFile(self.outfilenameraw,'recreate')
         index = 0
         self.outfileraw.cd()
         for frame in self.lhexframe :
@@ -110,6 +128,7 @@ class myrun(object):
             index += 1
 
     def process_input_align(self):
+        self.outfilesel = TFile(self.outfilenamesel,'recreate')
         ldataframeall0 = []
         ldataframeall1 = []
         ldataframeall2 = []
@@ -170,28 +189,48 @@ class myrun(object):
 #            self.outfilesel.cd()
 #            gr.Write("tgframeslign3_{}".format(i))
 #            h2.Write()
+        self.arrdataframealign0 = np.asarray(ldataframealign0)
+        self.arrdataframealign1 = np.asarray(ldataframealign1)
+        self.arrdataframealign2 = np.asarray(ldataframealign2)
+        self.arrdataframealign3 = np.asarray(ldataframealign3)
+        self.mean0 = self.arrdataframealign0.mean(axis=0) if self.arrdataframealign0.size > 0 else np.zeros(72*72)
+        self.mean1 = self.arrdataframealign1.mean(axis=0) if self.arrdataframealign1.size > 0 else np.zeros(72*72)
+        self.mean2 = self.arrdataframealign2.mean(axis=0) if self.arrdataframealign2.size > 0 else np.zeros(72*72)
+        self.mean3 = self.arrdataframealign3.mean(axis=0) if self.arrdataframealign3.size > 0 else np.zeros(72*72)
+        self.std0 = self.arrdataframealign0.std(axis=0) if self.arrdataframealign0.size > 0 else np.zeros(72*72)
+        self.std1 = self.arrdataframealign1.std(axis=0) if self.arrdataframealign1.size > 0 else np.zeros(72*72)
+        self.std2 = self.arrdataframealign2.std(axis=0) if self.arrdataframealign2.size > 0 else np.zeros(72*72)
+        self.std3 = self.arrdataframealign3.std(axis=0) if self.arrdataframealign3.size > 0 else np.zeros(72*72)
+        writeframetoroot(self.mean0, "mean0", self.outfilesel) 
+        writeframetoroot(self.mean1, "mean1", self.outfilesel) 
+        writeframetoroot(self.mean2, "mean2", self.outfilesel) 
+        writeframetoroot(self.mean3, "mean3", self.outfilesel) 
+        writeframetoroot(self.std0, "std0", self.outfilesel) 
+        writeframetoroot(self.std1, "std1", self.outfilesel) 
+        writeframetoroot(self.std2, "std2", self.outfilesel) 
+        writeframetoroot(self.std3, "std3", self.outfilesel) 
 
-        self.meanstd0 = calmeanstd(ldataframealign0)
-        self.meanstd1 = calmeanstd(ldataframealign1)
-        self.meanstd2 = calmeanstd(ldataframealign2)
-        self.meanstd3 = calmeanstd(ldataframealign3)
-        writeframetoroot(self.meanstd0[0], "mean0", self.outfilesel) 
-        writeframetoroot(self.meanstd0[1], "std0", self.outfilesel) 
-        writeframetoroot(self.meanstd1[0], "mean1", self.outfilesel)      
-        writeframetoroot(self.meanstd1[1], "std1", self.outfilesel)
-        #writeframetoroot(self.meanstd2[0], "mean2", self.outfilesel)      
-        #writeframetoroot(self.meanstd2[1], "std2", self.outfilesel)
-        writeframetoroot(self.meanstd3[0], "mean3", self.outfilesel)      
-        writeframetoroot(self.meanstd3[1], "std3", self.outfilesel)
+    def process_bksub(self, bkg):
+        self.outfilesub = TFile(self.outfilenamesub,'recreate')
+        self.arrdataframealignsub0 = self.arrdataframealign0 - bkg.mean0 if self.arrdataframealign0.size > 0 else np.array([]) 
+        self.arrdataframealignsub1 = self.arrdataframealign1 - bkg.mean1 if self.arrdataframealign1.size > 0 else np.array([])
+        self.arrdataframealignsub2 = self.arrdataframealign2 - bkg.mean2 if self.arrdataframealign2.size > 0 else np.array([])
+        self.arrdataframealignsub3 = self.arrdataframealign3 - bkg.mean3 if self.arrdataframealign3.size > 0 else np.array([])
+        writearrframetoroot(self.arrdataframealignsub0, "framealignsub0", self.outfilesub)
+        writearrframetoroot(self.arrdataframealignsub1, "framealignsub1", self.outfilesub)
+        writearrframetoroot(self.arrdataframealignsub2, "framealignsub2", self.outfilesub)
+        writearrframetoroot(self.arrdataframealignsub3, "framealignsub3", self.outfilesub)
 
     def finalize(self):
-        self.outfileraw.Close()
-        self.outfilesel.Close()
+        self.lhexframe = 0
+        if self.outfileraw : self.outfileraw.Close()
+        if self.outfilesel : self.outfilesel.Close()
+        if self.outfilesub : self.outfilesub.Close()
 
 def calmeanstd(ldataframe):
     print("calaveragerms:")
     if len(ldataframe) > 0 :
-        arrdataframe = np.array(ldataframe)
+        arrdataframe = np.asarray(ldataframe)
         print("ldataframe shape {} ndim {}".format(arrdataframe.shape, arrdataframe.ndim))
         arrmean = arrdataframe.mean(axis=0)
         arrstd = arrdataframe.std(axis=0)
@@ -211,6 +250,15 @@ def writelframetoroot(ldataframe, savetag, outfile):
         h2 = list2th2f(ldataframe[i],("h2"+savetag+"_{}").format(i))
         gr.Write(("tg"+savetag+"_{}").format(i))
         h2.Write() 
+
+def writearrframetoroot(arrdataframe, savetag, outfile):
+    outfile.cd()
+    for i in range(arrdataframe.shape[0]):
+        gr = arr2tgraph(arrdataframe[i])
+        h2 = arr2th2f(arrdataframe[i],("h2"+savetag+"_{}").format(i))
+        gr.Write(("tg"+savetag+"_{}").format(i))
+        h2.Write()
+
 
 def writeframetoroot(dataframe, savetag, outfile):
     gr = arr2tgraph(dataframe)
@@ -295,20 +343,33 @@ def test():
     #print(hex(b0))
 
 def test1():
-    #filename = '../data/AdcData-11-4-21-3-38.dat'
-    #filename = '/Users/wanghulin/Workdir/CEE/harddriveallcee/data2/AdcData-11-5-18-9-20.dat'
-    #filename = '/Users/wanghulin/Workdir/CEE/testDongsheng/software/data/dataout.dat'
-    #filename = '/Users/wanghulin/Workdir/CEE/harddriveallcee/data/AdcData-11-5-17-57-12.dat'
-    #filename = '/Users/wanghulin/Workdir/CEE/harddriveallcee/background.dat'
-    #filename = '/Users/wanghulin/Workdir/CEE/harddriveallcee/50Hz_50mV_in.dat'
     dirname = "../2021.11.8test_data/a4/"
-    filename1 = "AdcData-11-8-20-23-29.dat"
-    filename = dirname+filename1
-    run1 = myrun(filename)
-    run1.getinput_from_dat()
-    run1.process_input()
-    run1.process_input_align()
-    run1.finalize()
+
+    filenamebkg = "background1.dat"
+    pathbkg = dirname+filenamebkg
+    runbkg = myrun(pathbkg, tag="bkg")
+    runbkg.getinput_from_dat()
+    runbkg.process_input_align()
+    runbkg.finalize()
+
+
+#    filenamesig = "AdcData-11-8-20-23-40.dat"
+#    pathsig = dirname + filenamesig
+#    runsig = myrun(pathsig)
+#    runsig.getinput_from_dat()
+#    runsig.process_input_align()
+#    runsig.process_bksub(runbkg)
+#    runsig.finalize()
+
+    paths = glob(dirname+'*.dat')
+    print(f"{len(paths)} files")
+    for f in paths:
+        print(f'\n{f}')
+        runsig = myrun(f, tag="sig")
+        runsig.getinput_from_dat()
+        runsig.process_input_align()
+        runsig.process_bksub(runbkg)
+        runsig.finalize()
 
 if __name__ == '__main__':
     test1()
