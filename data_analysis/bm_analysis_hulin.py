@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# import coloredlogs
+# import logging
+
+# logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# log = logging.getLogger(__name__)
+# log.setLevel(logging.DEBUG)
+# coloredlogs.install(level="DEBUG", logger=log)
+
 
 from glob import glob
 import os
@@ -38,8 +46,10 @@ class myrun(object):
         self.arrdataframealignsub1 = None
         self.arrdataframealignsub2 = None
         self.arrdataframealignsub3 = None
+        # log.debug("my run initialed")
 
     def getinput_from_dat(self):
+        # log.debug("Get input from data file: {:s}".format(self.file_name))
         with open(self.filename,'rb') as f1:
             hexdataall = f1.read().hex()
             hexlen = len(hexdataall)
@@ -334,8 +344,8 @@ def ldataframealltoalign(ldataframeall0):
     #print("ldataframealign0 size {}".format(len(ldataframealign0)))
     return ldataframealign0
 
-def test():
-    f1 = open('../data/arst1.05_20k_200mV_in.dat','rb')
+def test(file_path):
+    f1 = open(file_path,'rb')
     b0 = f1.read(10)
     print(len(b0.hex()))
     print(len(b0))
@@ -371,5 +381,14 @@ def test1():
         runsig.process_bksub(runbkg)
         runsig.finalize()
 
+def test2(file_path):
+    runbkg = myrun(file_path, tag="bkg")
+    runbkg.getinput_from_dat()
+
+
 if __name__ == '__main__':
-    test1()
+    dir_path = "../data/"
+    file_name = "AdcData-11-11-15-56-28.dat"
+    file_path = dir_path + file_name
+    # test(file_path)
+    test2(file_path)
