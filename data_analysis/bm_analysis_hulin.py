@@ -2,7 +2,6 @@
 
 from glob import glob
 import os
-import matplotlib.pyplot as plt
 from ROOT import TGraph, TCanvas, TFile, TH1F, TH2F, TChain, gDirectory, TLegend, TColor
 from array import array
 import numpy as np
