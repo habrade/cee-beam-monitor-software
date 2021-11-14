@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-# import coloredlogs
-# import logging
+import argparse
+import coloredlogs
+import logging
 
-# logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-# log = logging.getLogger(__name__)
-# log.setLevel(logging.DEBUG)
-# coloredlogs.install(level="DEBUG", logger=log)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+coloredlogs.install(level="DEBUG", logger=log)
 
 
 from glob import glob
@@ -46,10 +47,10 @@ class myrun(object):
         self.arrdataframealignsub1 = None
         self.arrdataframealignsub2 = None
         self.arrdataframealignsub3 = None
-        # log.debug("my run initialed")
+        log.debug("my run initialed")
 
     def getinput_from_dat(self):
-        # log.debug("Get input from data file: {:s}".format(self.file_name))
+        log.debug("Get input from data file: {:s}".format(self.filename))
         with open(self.filename,'rb') as f1:
             hexdataall = f1.read().hex()
             hexlen = len(hexdataall)
@@ -61,20 +62,11 @@ class myrun(object):
             lheaddiff = [j-i for i, j in zip(lhead[:-1],lhead[1:])]
             ltaildiff = [j-i for i, j in zip(ltail[:-1],ltail[1:])]
             lheadtaildiff = []
+            log.debug("head: {}, tail: {}".format(lhead, ltail))
             if(lhead[0]>ltail[0]) : ltail.pop(0)
             lheadtaildiff = [j-i for i, j in zip(lhead,ltail)]
             print("len head tail",len(lhead),len(ltail))
-            #print("lhead")
-            #print(lhead)
-            #print("lheaddiff")
-            #print(lheaddiff)
-            #print("ltail")
-            #print(ltail)
-            #print("ltaildiff")
-            #print(ltaildiff)
-            #print("lheadtaildiff")
-            #print(lheadtaildiff)
-            #ilhex = 0
+
             for ih in range(len(lhead)-1) :
                 iframestart = lhead[ih] + 8
                 iframestop = lhead[ih] + 8
@@ -384,11 +376,19 @@ def test1():
 def test2(file_path):
     runbkg = myrun(file_path, tag="bkg")
     runbkg.getinput_from_dat()
+    runbkg.process_input()
 
 
 if __name__ == '__main__':
-    dir_path = "../data/"
-    file_name = "AdcData-11-11-15-56-28.dat"
-    file_path = dir_path + file_name
-    # test(file_path)
-    test2(file_path)
+    parser = argparse.ArgumentParser()
+    mode_group = parser.add_mutually_exclusive_group()
+    # mode_group.add_argument('-a', '--all',
+                            # help="nothing here",
+                            # action="store_true")
+    parser.add_argument('-d', '--data_file',
+                        default=0,
+                        help="The data file.")
+    args = parser.parse_args()
+
+    runbkg = myrun(args.data_file, tag="bkg")
+    runbkg.getinput_from_dat()
